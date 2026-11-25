@@ -30,4 +30,4 @@ jobs:
         run: cargo build --release
       - name: Show artifacts
         working-directory: source
-        run: ls -lh target/release/nydusd target/release/nydus-image target/release/nydusify
+        run: ls -lh target/release/nydusd target/release/nydus-image
