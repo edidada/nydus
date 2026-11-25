@@ -1,0 +1,33 @@
+name: CI Verify (nydus)
+
+on:
+  push:
+    branches: ["ci/gha-verify"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Clone upstream source
+        run: git clone --depth=1 --branch master https://github.com/dragonflyoss/nydus.git source
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: source
+      - name: Install build deps
+        run: sudo apt-get update && sudo apt-get install -y protobuf-compiler libssl-dev pkg-config
+      - name: Build
+        working-directory: source
+        run: cargo build --release
+      - name: Show artifacts
+        working-directory: source
+        run: ls -lh target/release/nydusd target/release/nydus-image target/release/nydusify
